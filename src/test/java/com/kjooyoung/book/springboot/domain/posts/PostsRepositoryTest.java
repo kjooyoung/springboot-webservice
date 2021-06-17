@@ -1,6 +1,8 @@
 package com.kjooyoung.book.springboot.domain.posts;
 
+import com.kjooyoung.book.springboot.web.dto.PostsUpdateRequestDto;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,46 @@ public class PostsRepositoryTest {
     @Autowired
     PostsRepository postsRepository;
 
+    @Before
+    public void addPosts() {
+
+    }
+
     @After
     public void cleanup(){
         postsRepository.deleteAll();
     }
 
     @Test
-    public void 게시글저장_불러오기(){
-        String title = "테스트 게시글";
-        String content = "테스트 본문";
+    public void 게시글_저장_불러오기(){
+        String title = "title";
+        String content = "content";
 
         postsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
-                .author("kjyoung4102@gmail.com")
+                .author("author")
                 .build());
 
         List<Posts> postsList = postsRepository.findAll();
 
         Posts posts = postsList.get(0);
+        assertThat(posts.getTitle()).isEqualTo(title);
+        assertThat(posts.getContent()).isEqualTo(content);
+    }
+
+    @Test
+    public void 게시글_조회(){
+        String title = "title";
+        String content = "content";
+
+        Long id = postsRepository.save(Posts.builder()
+                    .title(title)
+                    .content(content)
+                    .author("author")
+                    .build()).getId();
+        Posts posts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found"));
+
         assertThat(posts.getTitle()).isEqualTo(title);
         assertThat(posts.getContent()).isEqualTo(content);
     }
